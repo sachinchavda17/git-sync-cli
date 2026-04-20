@@ -1,0 +1,81 @@
+#!/bin/bash
+
+COMMIT_ID=$1
+SOURCE_BRANCH=$2
+
+echo "========================================"
+echo "🚀 Git File Sync Tool"
+echo "========================================"
+
+# ✅ Validate input
+if [ -z "$COMMIT_ID" ]; then
+  echo "❌ Error: Missing commit ID"
+  echo "👉 Usage: git-sync <commit-id> [source-branch]"
+  echo ""
+  echo "Examples:"
+  echo "  git-sync 9f6ac62"
+  echo "  git-sync 9f6ac62 pre-production"
+  exit 1
+fi
+
+CURRENT_BRANCH=$(git branch --show-current)
+
+echo "📍 Current branch: $CURRENT_BRANCH"
+
+# ✅ Validate commit exists
+if ! git cat-file -e "$COMMIT_ID^{commit}" 2>/dev/null; then
+  echo "❌ Error: Commit not found -> $COMMIT_ID"
+  exit 1
+fi
+
+# 🔄 Fetch latest refs
+echo "🔄 Fetching latest remote data..."
+git fetch origin >/dev/null 2>&1
+
+# ✅ Validate source branch (if provided)
+if [ -n "$SOURCE_BRANCH" ]; then
+  if ! git rev-parse --verify "origin/$SOURCE_BRANCH" >/dev/null 2>&1; then
+    echo "❌ Error: Source branch not found -> origin/$SOURCE_BRANCH"
+    exit 1
+  fi
+  echo "📥 Code source: branch → $SOURCE_BRANCH"
+else
+  echo "📥 Code source: commit → $COMMIT_ID"
+fi
+
+echo "----------------------------------------"
+echo "📂 Reading files changed in commit..."
+echo "----------------------------------------"
+
+FILES=$(git show --name-only --pretty="" "$COMMIT_ID")
+
+if [ -z "$FILES" ]; then
+  echo "⚠️ No files found in commit"
+  exit 0
+fi
+
+COUNT=0
+
+# 🔁 Process files
+echo "$FILES" | while read file; do
+  if [ -n "$file" ]; then
+    COUNT=$((COUNT + 1))
+
+    if [ -n "$SOURCE_BRANCH" ]; then
+      echo "🔹 [$COUNT] Updating from branch: $file"
+      git checkout "origin/$SOURCE_BRANCH" -- "$file"
+    else
+      echo "🔹 [$COUNT] Updating from commit: $file"
+      git checkout "$COMMIT_ID" -- "$file"
+    fi
+  fi
+done
+
+echo "----------------------------------------"
+echo "📦 Staging updated files..."
+git add .
+
+echo "----------------------------------------"
+echo "✅ Sync completed successfully!"
+echo "📍 Current branch: $CURRENT_BRANCH (unchanged)"
+echo "========================================"
