@@ -1,0 +1,18 @@
+{
+  "name": "git-sync-cli",
+  "version": "1.0.0",
+  "description": "CLI tool to sync files from commit or branch",
+  "bin": {
+    "git-sync": "bin/git-sync.js"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "sync"
+  ],
+  "author": "Sachin Chavda",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
