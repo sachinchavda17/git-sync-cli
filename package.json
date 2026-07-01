@@ -1,5 +1,5 @@
 {
-  "name": "@sachinchavda/git-sync-cli",
+  "name": "@sachinchavda/git-sync",
   "version": "1.0.1",
   "description": "CLI tool to sync files from commit or branch",
   "bin": {
@@ -7,8 +7,9 @@
   },
   "keywords": [
     "git",
+    "sync",
     "cli",
-    "sync"
+    "git-sync"
   ],
   "author": "Sachin Chavda",
   "license": "MIT",
