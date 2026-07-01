@@ -3,79 +3,71 @@
 COMMIT_ID=$1
 SOURCE_BRANCH=$2
 
-echo "========================================"
-echo "🚀 Git File Sync Tool"
-echo "========================================"
+echo "----------------------------------------"
+echo "        Git Sync CLI        "
+echo "----------------------------------------"
 
-# ✅ Validate input
 if [ -z "$COMMIT_ID" ]; then
-  echo "❌ Error: Missing commit ID"
-  echo "👉 Usage: git-sync <commit-id> [source-branch]"
-  echo ""
-  echo "Examples:"
-  echo "  git-sync 9f6ac62"
-  echo "  git-sync 9f6ac62 pre-production"
+  echo "Error: Missing commit ID" >&2
+  echo "Usage: git-sync <commit-id> [branch]" >&2
   exit 1
 fi
 
 CURRENT_BRANCH=$(git branch --show-current)
+echo "Current branch: $CURRENT_BRANCH"
 
-echo "📍 Current branch: $CURRENT_BRANCH"
-
-# ✅ Validate commit exists
+# Validate commit
 if ! git cat-file -e "$COMMIT_ID^{commit}" 2>/dev/null; then
-  echo "❌ Error: Commit not found -> $COMMIT_ID"
+  echo "Invalid commit: $COMMIT_ID"
   exit 1
 fi
 
-# 🔄 Fetch latest refs
-echo "🔄 Fetching latest remote data..."
+# Fetch latest
+echo "Fetching latest..."
 git fetch origin >/dev/null 2>&1
 
-# ✅ Validate source branch (if provided)
+# Validate branch if provided
 if [ -n "$SOURCE_BRANCH" ]; then
   if ! git rev-parse --verify "origin/$SOURCE_BRANCH" >/dev/null 2>&1; then
-    echo "❌ Error: Source branch not found -> origin/$SOURCE_BRANCH"
+    echo "Branch not found: $SOURCE_BRANCH"
     exit 1
   fi
-  echo "📥 Code source: branch → $SOURCE_BRANCH"
+  echo "Code source: branch → $SOURCE_BRANCH"
 else
-  echo "📥 Code source: commit → $COMMIT_ID"
+  echo "Code source: commit → $COMMIT_ID"
 fi
 
-echo "----------------------------------------"
-echo "📂 Reading files changed in commit..."
-echo "----------------------------------------"
-
+# Get files
 FILES=$(git show --name-only --pretty="" "$COMMIT_ID")
 
 if [ -z "$FILES" ]; then
-  echo "⚠️ No files found in commit"
+  echo "No files found" >&2
   exit 0
 fi
 
-COUNT=0
+echo "----------------------------------------"
+echo "            Processing files            "
+echo "----------------------------------------"
 
-# 🔁 Process files
-echo "$FILES" | while read file; do
+COUNT=0
+echo "$FILES" | while read -r file; do
   if [ -n "$file" ]; then
     COUNT=$((COUNT + 1))
+    echo "$COUNT - $file"
 
     if [ -n "$SOURCE_BRANCH" ]; then
-      echo "🔹 [$COUNT] Updating from branch: $file"
-      git checkout "origin/$SOURCE_BRANCH" -- "$file"
+      git checkout "origin/$SOURCE_BRANCH" -- "$file" 2>/dev/null
     else
-      echo "🔹 [$COUNT] Updating from commit: $file"
-      git checkout "$COMMIT_ID" -- "$file"
+      git checkout "$COMMIT_ID" -- "$file" 2>/dev/null
     fi
   fi
 done
 
+# Stage
 echo "----------------------------------------"
-echo "📦 Staging updated files..."
+echo "           Staging changes            "
 git add .
 
 echo "----------------------------------------"
-echo "✅ Sync completed successfully!"
-echo "📍 Current branch: $CURRENT_BRANCH (unchanged)"
-echo "========================================"
+echo "                Done!                   "
+echo "----------------------------------------"
