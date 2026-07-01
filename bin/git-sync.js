@@ -28,7 +28,7 @@ const currentBranch = run("git branch --show-current");
 console.log(`Current branch: ${currentBranch}`);
 
 // Validate commit
-if (!run(`git cat-file -e ${COMMIT_ID}^{commit}`)) {
+if (run(`git cat-file -e "${COMMIT_ID}^{commit}"`) === null) {
   console.log(`Invalid commit: ${COMMIT_ID}`);
   process.exit(1);
 }
@@ -39,7 +39,7 @@ run("git fetch origin");
 
 // Validate branch if provided
 if (SOURCE_BRANCH) {
-  if (!run(`git rev-parse --verify origin/${SOURCE_BRANCH}`)) {
+  if (run(`git rev-parse --verify "origin/${SOURCE_BRANCH}"`) === null) {
     console.log(`Branch not found: ${SOURCE_BRANCH}`);
     process.exit(1);
   }
