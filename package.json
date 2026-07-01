@@ -1,6 +1,6 @@
 {
   "name": "@sachinchavda/git-sync-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool to sync files from commit or branch",
   "bin": {
     "git-sync": "bin/git-sync.js"

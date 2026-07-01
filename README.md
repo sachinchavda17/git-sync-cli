@@ -125,7 +125,6 @@ git-sync 9f6ac62 pre-production
 ## 🛠 Future Improvements
 
 * Dry run mode
-* Interactive file selection
 * PR URL support
 
 ---
