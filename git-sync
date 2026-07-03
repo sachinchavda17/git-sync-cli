@@ -4,7 +4,7 @@ COMMIT_ID=$1
 SOURCE_BRANCH=$2
 
 echo "----------------------------------------"
-echo "        Git Sync CLI        "
+echo "             Git Sync CLI               "
 echo "----------------------------------------"
 
 if [ -z "$COMMIT_ID" ]; then
@@ -45,9 +45,7 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-echo "----------------------------------------"
-echo "            Processing files            "
-echo "----------------------------------------"
+echo "Processing files..."
 
 COUNT=0
 echo "$FILES" | while read -r file; do
@@ -64,10 +62,6 @@ echo "$FILES" | while read -r file; do
 done
 
 # Stage
-echo "----------------------------------------"
-echo "           Staging changes            "
+echo "\nStaging changes."
 git add .
 
-echo "----------------------------------------"
-echo "                Done!                   "
-echo "----------------------------------------"

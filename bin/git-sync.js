@@ -15,7 +15,7 @@ function run(cmd) {
 }
 
 console.log("----------------------------------------");
-console.log("        Git Sync CLI        ");
+console.log("             Git Sync CLI               ");
 console.log("----------------------------------------");
 
 if (!COMMIT_ID) {
@@ -58,12 +58,10 @@ if (!filesOutput) {
 
 const files = filesOutput.split("\n").filter(Boolean);
 
-console.log("----------------------------------------");
-console.log("            Processing files            ");
-console.log("----------------------------------------");
+console.log("Processing files...");
 
 files.forEach((file, index) => {
-  console.log(`${index + 1} - ${file}`);
+  console.log(`${index + 1}. ${file}`);
 
   if (SOURCE_BRANCH) {
     run(`git checkout origin/${SOURCE_BRANCH} -- "${file}"`);
@@ -73,10 +71,6 @@ files.forEach((file, index) => {
 });
 
 // Stage
-console.log("----------------------------------------");
-console.log("           Staging changes            ");
+console.log("\nStaging changes.");
 run("git add .");
 
-console.log("----------------------------------------");
-console.log("                Done!                   ");
-console.log("----------------------------------------");
